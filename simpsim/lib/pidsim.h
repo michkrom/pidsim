@@ -11,13 +11,15 @@ public:
 	PidSim();
 	
 	// interface to a plant model, supplied by user
-	class IPlant {
+	class IProcessor {
 		// computes feedback signal from plant
 		public: virtual double compute(double input, double time) = 0;
 	};
 	
 	// sets users plant
-	void setPlant(IPlant* p) { _plant = p; }
+	void setPlant(IProcessor* p) { _pplant = p; }
+	// sets users plant
+	void setStimulus(IProcessor* p) { _pstimulus = p; }
 	
 	// PID gains
 	void setKp(double v) { _kp = v; }
@@ -52,7 +54,8 @@ private:
 	double _integral;
 	double _kdf;
 	
-	IPlant* _plant;
+	IProcessor* _pplant;
+	IProcessor* _pstimulus;
 	
 };
 

@@ -25,7 +25,8 @@ PidSim::PidSim() :
 	_feedback(0),
 	_integral(0),
 	_kdf(0),
-	_plant(0)
+	_pplant(0), 
+	_pstimulus(0)
 {}
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -43,13 +44,13 @@ void PidSim::step(double time)
 	_prevTime = time;
 	
 	if( deltaTime > 0 ) {
-		// compute stimulus - heare a simple step function @ time 1second
-		_stimulus = time >= 1 ? 1 : 0;
+		// compute stimulus value (stimulus ignores input hence set to 0)
+		_stimulus = _pstimulus ? _pstimulus->compute(0,time) : 0;
 		
 		// error signal
 		_error = _stimulus - _feedback;
 
-		// PID
+		// PID controller
 		double derivative = (_error - _prevError) / deltaTime;
 				
 		_integral = _integral + _error * deltaTime;
@@ -60,7 +61,7 @@ void PidSim::step(double time)
 		_control = _kp * _error + _ki * _integral + _kdf;
 		
 		// use the supplied plant to compute feedback
-		_feedback = _plant ? _plant->compute( _control, time ) : 0;
+		_feedback = _pplant ? _pplant->compute( _control, time ) : 0;
 	}
 	else if( time == 0 ) { 
 		// initial conditions
