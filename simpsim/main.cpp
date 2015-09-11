@@ -13,18 +13,18 @@
 // simple plant- a first order low pass with noisy output system
 class Plant : public PidSim::IProcessor {
 public:
-	Plant() : 
-		_prevTime(0), _prevState(0) 
+	Plant(double cutoffFreq, double noiseAmpl) : 
+		_cutoffFreq(cutoffFreq), _noiseAmpl(noiseAmpl),
+		_prevTime(0), _prevState(0)
 	{}
 	
 	// computes feedback signal from plant
 	double compute(double input, double time) {
 		double ts = time - _prevTime;
-		double cutoffFreq = 5; // Hz
-		double tau = 1 / ( 2 * PI * cutoffFreq ); // time constant tRC
+		double tau = 1 / ( 2 * PI * _cutoffFreq ); // time constant tRC
 		double alpha = tau / (tau + ts);
 		double out = alpha * _prevState + (1 - alpha) * input;
-		double noise = 0.1 * (double(rand()) / double(RAND_MAX) - 0.5);
+		double noise = _noiseAmpl * (double(rand()) / double(RAND_MAX) - 0.5);
 		out += noise;
 		_prevState = out;
 		_prevTime = time;
@@ -32,11 +32,14 @@ public:
 	}
 	
 private:
+	double _cutoffFreq;
+	double _noiseAmpl;
 	double _prevTime;
 	double _prevState;	
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+
 
 // step function
 class Step : public PidSim::IProcessor {
@@ -49,7 +52,6 @@ protected:
 	double _time;
 };
 
-////////////////////////////////////////////////////////////////////////////////
 
 // impulse function
 class Impulse : public PidSim::IProcessor {
@@ -64,6 +66,7 @@ protected:
 	double _time;
 	bool _fired;
 };
+
 
 // ramp function starts at given time and goes 0..1 with given slope 
 class Ramp : public PidSim::IProcessor {
@@ -85,20 +88,25 @@ protected:
 // global parameters
 // defaults adjusted manually to get a resonable step response from the plant above
 //
-double kp = 0.2;
+// PID params
+double kp = 1;
 double ki = 10;
-double kd = 0.1;
-double lpf = 5; // 5Hz
+double kd = 0.2;
+double lpf = 50; // 50Hz
+// simulation params
 double tSample = 1.0/100.0; // default 100Hz
-double tEnd = 5;
+double tEnd = 5; // seconds
 char stimulusType = 's';
+// plant's params
+double noiseAmpl = 0.1;
+double cutoffFreq = 1; // Hz
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void parseArgs(int argc, char **argv) {
 	bool ok = true;
 	char c;
-	while ((c = getopt (argc, argv, "p:i:d:s:e:f:x:")) != -1) {
+	while ((c = getopt (argc, argv, "p:i:d:s:e:f:x:n:c:")) != -1) {
 		switch (c) {
 			case 'p' : kp = atof(optarg); break;
 			case 'i' : ki = atof(optarg); break;
@@ -107,6 +115,8 @@ void parseArgs(int argc, char **argv) {
 			case 's' : tSample = atof(optarg); break;
 			case 'e' : tEnd = atof(optarg); break;
 			case 'x' : stimulusType = optarg[0]; break;
+			case 'n' : noiseAmpl = atof(optarg); break;
+			case 'c' : cutoffFreq = atof(optarg); break;
 			case '?' : 
 				ok = false;
 				fprintf(stderr, "option %c invalid \n", optopt); 
@@ -121,7 +131,9 @@ void parseArgs(int argc, char **argv) {
 			"s - sample period\n"
 			"e - end simulation time\n"
 			"x - stimulus type: impulse, step, ramp\n"
-			);
+			"n - plant's noise level\n"
+			"c - plant's cutoff Frequency\n"
+		);
 	}
 }
 
@@ -132,7 +144,7 @@ int main (int argc, char **argv) {
 	parseArgs(argc, argv);
 	
 	PidSim sim;
-	sim.setPlant(new Plant());
+	sim.setPlant(new Plant(cutoffFreq, noiseAmpl));
 	
 	PidSim::IProcessor* pStim = 0;
 	switch(stimulusType) {
