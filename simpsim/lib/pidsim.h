@@ -10,15 +10,15 @@ class PidSim
 public:
 	PidSim();
 	
-	// interface to a plant model, supplied by user
+	// interface to a plant and stimulut model, supplied by user
 	class IProcessor {
 		// computes feedback signal from plant
 		public: virtual double compute(double input, double time) = 0;
 	};
 	
-	// sets users plant
+	// sets user's plant
 	void setPlant(IProcessor* p) { _pplant = p; }
-	// sets users plant
+	// sets user's stimulus
 	void setStimulus(IProcessor* p) { _pstimulus = p; }
 	
 	// PID gains
@@ -59,6 +59,7 @@ private:
 	
 };
 
+// could use M_PI from math but support varies
 #define PI           3.14159265358979323846  /* pi */
 
 #endif

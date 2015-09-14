@@ -36,7 +36,8 @@ void PidSim::setLPF(double cutoffFreq) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
+// advances simulation state with a time step (next sample)
+//
 void PidSim::step(double time)
 {
 	// this is sample time (for this sample)

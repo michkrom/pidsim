@@ -4,8 +4,11 @@ A discrete-time PID control system simulation library and example.
 Overview
 ----------
 This is a PID constroller system simulation example.
-The example code in main.cpp creates a simple plant 
-and the runs simulation and output state to console in csv format.
+The code uses a 'lib' that implements PID and interface to set 
+plant and stimulus.
+
+The example code in main.cpp creates a simple plant and requested stimulus 
+and then runs simulation and outputs state to stdout in csv format.
 
 USAGE
 ------
@@ -28,4 +31,5 @@ main make file would automatically execute the library build.
 
 TODO
 -----
-abstract stimulus so user can also provide it
+- improve lib to separate interface (public includes) from source
+- cleaner desctruction or plant and stimulus

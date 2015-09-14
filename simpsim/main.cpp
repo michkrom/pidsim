@@ -11,7 +11,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// simple plant- a first order low pass with noisy output system
+// simple plant - a first order low pass with noisy output system
 class Plant : public PidSim::IProcessor {
 public:
 	Plant(double cutoffFreq, double noiseAmpl) : 
@@ -100,9 +100,15 @@ int main (int argc, char **argv) {
 
 	parseArgs(argc, argv);
 	
-	PidSim sim;
-	sim.setPlant(new Plant(cutoffFreq, noiseAmpl));
+	// set up simulation
 	
+	PidSim sim;
+	
+	// set up plant
+	Plant plant(cutoffFreq, noiseAmpl);
+	sim.setPlant(&plant);
+	
+	// select stimulus
 	PidSim::IProcessor* pStim = 0;
 	switch(stimulusType) {
 		case 'r' : pStim = new Ramp(1,1); break;
@@ -112,6 +118,7 @@ int main (int argc, char **argv) {
 	}	
 	sim.setStimulus(pStim);
 	
+	// set PID parameters
 	sim.setKp(kp);
 	sim.setKd(kd);
 	sim.setLPF(lpf);
@@ -129,5 +136,10 @@ int main (int argc, char **argv) {
 				sim.getFeedback() );
 		curTime += tSample;
 	}
+	
+	// not all objects are properly desctucted at this point
+	// but since we exit the process it;s not a big deal
+	// ideally the IProcess would have a virtual destructor and either 
+	// an explicit delete would suffice here or Sim could own and clean up.
 }
 
