@@ -1,0 +1,10 @@
+#!/bin/sh
+
+make clean
+
+rm -rf out
+
+rm -rf CMakeFiles; rm -rf CMakeCache.txt; rm -rf cmake_install.cmake;
+
+# find -iname '*cmake*' -not -name CMakeLists.txt -delete 
+

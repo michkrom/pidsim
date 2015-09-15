@@ -1,0 +1,6 @@
+#!/bin/sh
+# build script
+mkdir out
+cd out
+cmake ..
+make

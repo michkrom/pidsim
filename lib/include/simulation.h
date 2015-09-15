@@ -29,23 +29,10 @@ public:
 			_outputs.insert(p);
 	}
 
-	void run(double endTime, double sampleTime) {
-		for( double time = 0; time < endTime; time += sampleTime ) {
-			runStep(time);
-		}
-	}
+	void run(double endTime, double sampleTime);
 	
-	void runStep(double time) {
-		printf("%f", time);
-		for(Processors::iterator i = _processors.begin(); 
-			i != _processors.end(); i++ ) {
-			IProcessor* p = *i;
-			p->update(time);
-			if( _outputs.find(p) != _outputs.end() )
-				printf(", %f", p->get() );
-		}
-		printf("\n");		
-	}
+	void runStep(double time);
+	
 private:
 	typedef std::list<IProcessor*> Processors;
 	Processors _processors;
