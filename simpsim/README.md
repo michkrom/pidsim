@@ -7,8 +7,14 @@ This is a PID constroller system simulation example.
 The code uses a 'lib' that implements PID and interface to set 
 plant and stimulus.
 
-The example code in main.cpp creates a simple plant and requested stimulus 
-and then runs simulation and outputs state to stdout in csv format.
+The example code in main.cpp creates a simple plant and a stimulus.
+It then runs the simulation and outputs state to stdout in CSV format: 
+"time,stimulus,error,control,feedback".
+
+The simulation loop is implemented in main.cpp and user has control on progress of time, ie. samping rate. 
+This allow simulation of system with jittery clocks (uneven sampling).
+The specification of cut-off frequency is in SI units [Hz] while the time is in [s].
+To achive system update (sample rate) of say 10Hz, the time must be stepped by 0.1s = 1/10Hz.
 
 USAGE
 ------
@@ -24,12 +30,10 @@ pidsim -pV -iV -dV -fV -sV -eV
 
 BUILD
 ------
-A simple, primitive makefile is provided so just make it!
+A cmake build system is in place. A build script for out-or-source build is provided.
 
-There is libpidsim in "lib" subdirectory and aldo has a makefile but the 
-main make file would automatically execute the library build.
+The libpidsim i sin "lib" subdirectory and has it's own build script, however the main test program is automaticly invoking it.
 
 TODO
 -----
-- improve lib to separate interface (public includes) from source
 - cleaner desctruction or plant and stimulus

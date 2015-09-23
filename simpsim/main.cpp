@@ -1,4 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
+//
 // PID controller simulator, demonstrates use of libpidsim.
 //
 
@@ -91,6 +92,7 @@ void parseArgs(int argc, char **argv) {
 			"n - plant's noise level\n"
 			"c - plant's cutoff Frequency\n"
 		);
+		exit(1);
 	}
 }
 
@@ -104,7 +106,7 @@ int main (int argc, char **argv) {
 	
 	PidSim sim;
 	
-	// set up plant
+	// set up the plant
 	Plant plant(cutoffFreq, noiseAmpl);
 	sim.setPlant(&plant);
 	
@@ -137,9 +139,9 @@ int main (int argc, char **argv) {
 		curTime += tSample;
 	}
 	
-	// not all objects are properly desctucted at this point
-	// but since we exit the process it;s not a big deal
-	// ideally the IProcess would have a virtual destructor and either 
-	// an explicit delete would suffice here or Sim could own and clean up.
+	// not all objects are properly destructed at this point
+	// but since we exit the process it's not a big deal
+	// ideally the IProcessor would have a virtual destructor and either 
+	// an explicit delete would suffice here or the Sim could own and clean up.
 }
 

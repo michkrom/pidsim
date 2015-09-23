@@ -1,12 +1,13 @@
 #pragma once
 //
-// a simple FIR filter implementation
-// templetized on T - sample type and TC compute type
+// A simple FIR filter implementation
+// templetized on T - sample type and TC - compute type
 // note that when TC is integral, set RANGE to max sample value!
 //
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+////////////////////////////////////////////////////////////////////////
 // a generic inteface for getting and putting samples into a DSP 'processor'
 // T - sample type
 template<class T>
@@ -17,29 +18,30 @@ public:
 };
 
 
+////////////////////////////////////////////////////////////////////////
 // FIR filter implemenation
 // T - sample type, 
 // N - filter length, 
-// TC - compute type (default to T)
+// TC - compute type (defaults to T)
 // RANGE - filter computational of coeffitients for use with fixpoint math
 template<class T, int N, class TC = T, int RANGE = 1>
 class TFir : public IDsp<T>
 {
 public:
-    TFir() : 
-        _idx(0)
-    {
+    TFir() : _idx(0)  {
         for (int n = 0; n < N; n++) _samples[n] = 0;
     }
 
     ~TFir() {
     }
 
+	// input a sample to the filter
     void put(T sample) { 
         _samples[_idx] = sample;
         _idx = (_idx + 1 ) % N;
     }
 
+	// compute and retrieve a sample from the filter
     T get() {
         TC sum = 0;
         for (int i = 0, j = _idx == 0 ? N-1 : _idx-1; 
@@ -51,22 +53,22 @@ public:
         return T(sum);
     }
 
+	// number of taps
     int length() const { return N; }
 
+	// sets coeffitiens from and array
     void setCoeffs(TC* coeffs) { 
         for (int i = 0; i < N; i++)
             _coeffs[i] = coeffs[i];
     }
 
 
+	// returns i-th coeffitiens
     TC coeff(unsigned i) const { return _coeffs[i]; }
-    TC* coeffs() const { return _coeffs; }
+    // returns pointer for coefficiens
+    const TC* coeffs() const { return _coeffs; }
 
-    // http://www.labbookpages.co.uk/audio/firWindowing.html
-    // http://www.mikroe.com/chapters/view/72/chapter-2-fir-filters/
-
-    //  configurators use normalized frequency = frequencyHZ / sampleRateHz
-
+    //  filter configurators use normalized frequency = frequencyHZ / sampleRateHz
 
     // boxcar average
     void boxcar() {

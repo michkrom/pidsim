@@ -35,3 +35,5 @@ clean:
 	-rm -rf *.o
 	-rm -rf *.a	
 	-rm -f $(TARGET)
+	$(CD) lib
+	$(MAKE) clean

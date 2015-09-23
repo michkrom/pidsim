@@ -10,9 +10,9 @@ class PidSim
 public:
 	PidSim();
 	
-	// interface to a plant and stimulut model, supplied by user
+	// interface to a plant and stimulus model, supplied by user
 	class IProcessor {
-		// computes feedback signal from plant
+		// processes input into output
 		public: virtual double compute(double input, double time) = 0;
 	};
 	
